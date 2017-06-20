@@ -1,6 +1,7 @@
 resolver: nightly-2017-06-01
 packages:
 - '.'
-extra-deps: []
+extra-deps:
+- cryptohash-sha512-0.11.100.1
 flags: {}
 extra-package-dbs: []
