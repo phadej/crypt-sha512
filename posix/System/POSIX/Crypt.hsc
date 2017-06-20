@@ -18,6 +18,7 @@ lock = unsafePerformIO $ newMVar ()
 foreign import ccall unsafe "crypt"
    c_crypt :: CString -> CString -> IO CString
 
+-- | Calls @crypt@.
 crypt
     :: BS.ByteString  -- ^ key
     -> BS.ByteString  -- ^ salt

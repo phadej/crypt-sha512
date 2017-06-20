@@ -25,21 +25,36 @@ traceBSId _ = id
 
 -- | Pure Haskell implementation of SHA512 @crypt@ method.
 --
--- prop> "$6$" `isPrefixOf` salt ==> crypt key salt = cryptSHA key salt
+-- For @libc@ versions supporting SHA512 encryption scheme (6):
 --
--- == Spec ==
+-- prop> "$6$" `isPrefixOf` salt ==> crypt key salt = cryptSHA512 key salt
+--
+-- === a snippet from glibc documentation
 --
 -- @glibc@ implementations of @crypt@ support additional encryption algorithms.
 --
 -- If /salt/ is a character string starting with the characters @"$id$"@ followed by a string terminated by @"$"@:
 --
 -- @
--- $id$salt$encrypted
+-- \$id$salt$encrypted
 -- @
 --
 -- then instead of using the DES machine, id identifies the encryption method used and this then determines how the rest of the password  string  is  interpreted.
 --
 -- The @id@ value @6@ corresponds to SHA-512 method (since @glibc-2.17@).
+--
+-- If the /salt/ string starts with
+--
+-- @
+-- rounds=\<N>$
+-- @
+--
+-- where /N/ is an unsigned decimal number the numeric value of /N/ is used
+--to modify the algorithm used. For example:
+--
+-- @
+-- \$6$rounds=77777$salt$encrypted
+-- @
 --
 -- See <https://www.akkadia.org/drepper/SHA-crypt.txt>
 --
