@@ -4,8 +4,8 @@ module System.POSIX.Crypt (crypt) where
 #include <unistd.h>
 
 import Control.Concurrent.MVar (MVar, newMVar, withMVar)
-import Foreign
-import Foreign.C
+import Foreign (nullPtr)
+import Foreign.C (CString)
 import System.IO.Unsafe (unsafePerformIO)
 
 import qualified Data.ByteString as BS
@@ -28,5 +28,7 @@ crypt key salt = unsafePerformIO $ withMVar lock $ \_ ->
         res <- c_crypt ckey csalt
         if res == nullPtr
             then return Nothing
-            else fmap Just $ BS.packCString res
+            else do
+                bs <- BS.packCString res
+                bs `seq` return (Just bs)
 {-# NOINLINE crypt #-}

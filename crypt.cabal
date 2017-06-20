@@ -29,17 +29,31 @@ source-repository head
 
 library
   exposed-modules:      System.POSIX.Crypt
-  build-depends:        base          >=4.5   && <4.11,
-                        bytestring
+                        System.POSIX.Crypt.SHA512
+  build-depends:        base               >=4.5        && <4.11,
+                        bytestring,
+                        attoparsec         >=0.13.1.0   && <0.14,
+                        cryptohash-sha512  >=0.11.100.1 && <0.12
   default-language:     Haskell2010
   hs-source-dirs:       src
   other-extensions:     CApiFFI
   ghc-options:          -Wall
-  extra-libraries:      crypt
+  if !os(windows) && !os(osx)
+    extra-libraries:    crypt
+
+  if os(windows)
+    hs-source-dirs:     windows
+  else
+    hs-source-dirs:     posix
 
 test-suite example
-  build-depends:        base          >=4.5   && <4.11,
-                        crypt
+  build-depends:        base,
+                        crypt,
+                        bytestring,
+                        tasty,
+                        tasty-hunit,
+                        tasty-quickcheck,
+                        quickcheck-instances
   default-language:     Haskell2010
   main-is:              Example.hs
   type:                 exitcode-stdio-1.0
