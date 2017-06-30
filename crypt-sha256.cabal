@@ -1,20 +1,20 @@
-name:                   crypt
+name:                   crypt-sha256
 version:                0
-synopsis:               A wrapper around crypt
+synopsis:               Pure Haskell implelementation for GNU SHA256 crypt algorithm
 description:
   crypt() is the password encryption function.  It is based on the Data
   Encryption Standard algorithm with variations intended (among other things) to
   discourage use of hardware implementations of a key search.
   .
-  This package also provides a pure Haskell implementation of SHA512 crypt scheme.
+  This package provides a pure Haskell implementation of SHA512 crypt scheme.
 category:               Data
 license:                BSD3
 license-file:           LICENSE
 author:                 Oleg Grenrus <oleg.grenrus@iki.fi>
 maintainer:             Oleg Grenrus <oleg.grenrus@iki.fi>
 copyright:              2017 Oleg Grenrus
-homepage:               https://github.com/phadej/crypt
-bug-reports:            https://github.com/phadej/crypt
+homepage:               https://github.com/phadej/crypt-sha256
+bug-reports:            https://github.com/phadej/crypt-sha256
 extra-source-files:     README.md
 build-type:             Simple
 cabal-version:          >= 1.10
@@ -27,30 +27,24 @@ tested-with:
 
 source-repository head
   type:                 git
-  location:             git://github.com/phadej/crypt.git
+  location:             git://github.com/phadej/crypt-sha256.git
 
 library
-  exposed-modules:      System.POSIX.Crypt
-                        System.POSIX.Crypt.SHA512
+  exposed-modules:      System.POSIX.Crypt.SHA512
   build-depends:        base               >=4.5        && <4.11,
                         bytestring,
                         attoparsec         >=0.13.1.0   && <0.14,
                         cryptohash-sha512  >=0.11.100.1 && <0.12
   default-language:     Haskell2010
   hs-source-dirs:       src
-  other-extensions:     CApiFFI
   ghc-options:          -Wall
-  if !os(windows) && !os(osx)
-    extra-libraries:    crypt
-
-  if os(windows)
-    hs-source-dirs:     windows
-  else
-    hs-source-dirs:     posix
 
 test-suite example
+  if !os(linux)
+    buildable:          False
+
   build-depends:        base,
-                        crypt,
+                        crypt-sha256,
                         bytestring,
                         tasty,
                         tasty-hunit,
@@ -58,7 +52,9 @@ test-suite example
                         quickcheck-instances
   default-language:     Haskell2010
   main-is:              Example.hs
+  other-modules:        System.POSIX.Crypt
   type:                 exitcode-stdio-1.0
   hs-source-dirs:       test
-  other-extensions:     OverloadedStrings
+  other-extensions:     OverloadedStrings CApiFFI
+  extra-libraries:      crypt
   ghc-options:          -Wall
