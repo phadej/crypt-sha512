@@ -1,5 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
-module System.POSIX.Crypt.SHA512 (cryptSHA512) where
+module System.POSIX.Crypt.SHA512 (
+    cryptSHA512,
+    mkSalt,
+    mkSalt',
+    ) where
 
 import Control.Applicative (optional)
 import Data.List (foldl')
@@ -84,8 +88,6 @@ cryptSHA512 key saltI = case A.parseOnly saltP saltI of
             , encode64 enc
             ]
   where
-    header = "$6$" :: BS.ByteString
-
     saltP :: A.Parser (BS.ByteString, Maybe Int)
     saltP = do
         _ <- A.string header
@@ -99,6 +101,9 @@ cryptSHA512 key saltI = case A.parseOnly saltP saltI of
         n <- A8.decimal
         _ <- A.word8 36
         return $ min 999999999 $ max 1000 n
+
+header :: BS.ByteString
+header = "$6$"
 
 implementation
     :: Int            -- ^ rounds
@@ -204,7 +209,36 @@ implementation roundsN key salt =
         go i y | i < n     = y `seq` go (i+1) (f i y)
                | otherwise = y
 
--- | Custom base64 encoding
+-------------------------------------------------------------------------------
+-- Salt helper
+-------------------------------------------------------------------------------
+
+-- | Make a valid salt from random bytestring.
+mkSalt :: BS.ByteString -> BS.ByteString
+mkSalt = mkSalt' Nothing
+
+-- | A variant of 'mkSalt', allowing specifying rounds.
+mkSalt'
+    :: Maybe Int      -- ^ rounds
+    -> BS.ByteString  -- ^ entropy
+    -> BS.ByteString
+mkSalt' r e = BS.concat
+    [ "$6"
+    , r'
+    , "$"
+    , encode64 e
+    , "$"
+    ]
+  where
+    r' = case r of
+        Just n -> "rounds=" `BS.append` fromString (show $ min 999999999 $ max 1000 n)
+        Nothing -> ""
+
+-------------------------------------------------------------------------------
+-- Custom Base64 encoding
+-------------------------------------------------------------------------------
+
+-- | Custom base64 encoding used by crypt SHA256 scheme.
 encode64
     :: BS.ByteString  -- should be 64 word8 long!
     -> BS.ByteString
