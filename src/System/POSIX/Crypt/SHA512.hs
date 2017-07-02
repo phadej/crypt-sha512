@@ -85,11 +85,11 @@ cryptSHA512 key saltI = case A.parseOnly saltP saltI of
         _ <- A.string "rounds="
         n <- A8.decimal
         _ <- A.word8 36
-        return $ min 999999999 $ max 1000 n
+        return n
 
 -- | Split salt-input variant of 'cryptSHA512'. Salt is encoded.
 cryptSHA512'
-    :: Maybe Int      -- ^ Rounds
+    :: Maybe Int      -- ^ rounds
     -> BS.ByteString  -- ^ key
     -> BS.ByteString  -- ^ salt, will be base64 encoded
     -> BS.ByteString
@@ -97,20 +97,23 @@ cryptSHA512' rounds key salt = cryptSHA512Raw rounds key (encode64 salt)
 
 -- | Raw input implementation of 'cryptSHA512'.
 cryptSHA512Raw
-    :: Maybe Int      -- ^ Rounds
+    :: Maybe Int      -- ^ rounds, clamped into @[1000, 999999999]@ range
     -> BS.ByteString  -- ^ key
     -> BS.ByteString  -- ^ salt, first 16 characters used.
     -> BS.ByteString
-cryptSHA512Raw Nothing key salt =
-    let enc  = implementation 5000 key (BS.take 16 salt)
+cryptSHA512Raw Nothing key salt' =
+    let salt = BS.take 16 salt'
+        enc  = implementation 5000 key salt
     in BS.concat
         [ header
         , salt
         , "$"
         , encode64' enc
         ]
-cryptSHA512Raw (Just rounds) key salt =
-    let enc = implementation rounds key (BS.take 16 salt)
+cryptSHA512Raw (Just n) key salt' =
+    let rounds = min 999999999 $ max 1000 n
+        salt   = BS.take 16 salt'
+        enc    = implementation rounds key salt
     in BS.concat
         [ header
         , "rounds="
