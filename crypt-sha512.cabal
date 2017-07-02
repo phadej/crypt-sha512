@@ -1,6 +1,6 @@
-name:                   crypt-sha256
+name:                   crypt-sha512
 version:                0
-synopsis:               Pure Haskell implelementation for GNU SHA256 crypt algorithm
+synopsis:               Pure Haskell implelementation for GNU SHA512 crypt algorithm
 description:
   crypt() is the password encryption function.  It is based on the Data
   Encryption Standard algorithm with variations intended (among other things) to
@@ -13,8 +13,8 @@ license-file:           LICENSE
 author:                 Oleg Grenrus <oleg.grenrus@iki.fi>
 maintainer:             Oleg Grenrus <oleg.grenrus@iki.fi>
 copyright:              2017 Oleg Grenrus
-homepage:               https://github.com/phadej/crypt-sha256
-bug-reports:            https://github.com/phadej/crypt-sha256
+homepage:               https://github.com/phadej/crypt-sha512
+bug-reports:            https://github.com/phadej/crypt-sha512
 extra-source-files:     README.md
 build-type:             Simple
 cabal-version:          >= 1.10
@@ -27,7 +27,7 @@ tested-with:
 
 source-repository head
   type:                 git
-  location:             git://github.com/phadej/crypt-sha256.git
+  location:             git://github.com/phadej/crypt-sha512.git
 
 library
   exposed-modules:      System.POSIX.Crypt.SHA512
@@ -44,7 +44,7 @@ test-suite example
     buildable:          False
 
   build-depends:        base,
-                        crypt-sha256,
+                        crypt-sha512,
                         bytestring,
                         tasty,
                         tasty-hunit,

@@ -235,11 +235,11 @@ implementation roundsN key salt =
 -- Custom Base64 encoding
 -------------------------------------------------------------------------------
 
--- | Custom base64 encoding used by crypt SHA256 scheme.
+-- | Custom base64 encoding used by crypt SHA512 scheme.
 encode64 :: BS.ByteString -> BS.ByteString
 encode64 = encode64List . BS.unpack
 
--- | Custom base64 encoding used by crypt SHA256 scheme. See 'encode64'.
+-- | Custom base64 encoding used by crypt SHA512 scheme. See 'encode64'.
 encode64List :: [Word8] -> BS.ByteString
 encode64List = BS.pack . go
   where
@@ -276,7 +276,7 @@ encode64'
     :: BS.ByteString  -- should be 64 word8 long!
     -> BS.ByteString
 encode64' bs | BS.length bs /= 64 =
-    error $ "System.POSIX.Crypt.SHA256.encode64': input should be 64 in length: " ++ show (BS.length bs)
+    error $ "System.POSIX.Crypt.SHA512.encode64': input should be 64 in length: " ++ show (BS.length bs)
 encode64' bs = encode64List
     [ i  0, i 21, i 42
     , i 22, i 43, i  1

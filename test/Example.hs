@@ -28,7 +28,7 @@ main = do
 
     defaultMain $ testGroup "Tests" $
         [ sha512examples "cryptSHA512" cryptSHA512
-        , cryptSHA256RawExamples
+        , cryptSHA512RawExamples
         ] ++ glibcTests isGlibc
 
   where
@@ -95,8 +95,8 @@ sha512examples name c = testGroup name $
     m salt key expected = testCase (BS8.unpack salt) $ do
         c key salt @?= Just expected
 
-cryptSHA256RawExamples :: TestTree
-cryptSHA256RawExamples = testGroup "cryptSHA512Raw"
+cryptSHA512RawExamples :: TestTree
+cryptSHA512RawExamples = testGroup "cryptSHA512Raw"
     [ m Nothing "saltstring"
         "Hello world!"
         "$6$saltstring$svn8UoSVapNtMuq1ukKS4tPQd8iKwSMHWjl/O817G3uBnIFNjnQJuesI68u4OTLiBFdcbYEdFCoEOfaS35inz1"
