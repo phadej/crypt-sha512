@@ -1,5 +1,6 @@
 name:                   crypt-sha512
 version:                0
+x-revision:             1
 synopsis:               Pure Haskell implelementation for GNU SHA512 crypt algorithm
 description:
   crypt() is the password encryption function.  It is based on the Data
