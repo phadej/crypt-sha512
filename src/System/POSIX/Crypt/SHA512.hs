@@ -9,15 +9,15 @@ module System.POSIX.Crypt.SHA512 (
     ) where
 
 import Control.Applicative (optional)
-import Data.List (foldl')
-import Data.Word (Word8, Word32)
-import Data.String (fromString) -- use builder
-import Data.Bits (shiftL, shiftR, (.&.), (.|.))
+import Data.Bits           (shiftL, shiftR, (.&.), (.|.))
+import Data.List           (foldl')
+import Data.String         (fromString)
+import Data.Word           (Word32, Word8)
 
-import qualified Data.ByteString as BS
-import qualified Data.Attoparsec.ByteString as A
+import qualified Crypto.Hash.SHA512               as SHA
+import qualified Data.Attoparsec.ByteString       as A
 import qualified Data.Attoparsec.ByteString.Char8 as A8
-import qualified Crypto.Hash.SHA512 as SHA
+import qualified Data.ByteString                  as BS
 
 {-
 import qualified Data.ByteString.Base16 as Base16
@@ -135,7 +135,7 @@ implementation
 implementation roundsN key salt =
        -- steps 4-8
     let digB = traceBSId "digest B" $
-            SHA.finalize $ flip SHA.updates [key, salt, key] $ SHA.init
+            SHA.finalize $ SHA.updates SHA.init [key, salt, key]
 
         -- steps 1-3
         ctxA0 = SHA.updates SHA.init [key, salt]
@@ -258,10 +258,10 @@ encode64List = BS.pack . go
         w :: Word32
         w = fromIntegral b0 .|. fromIntegral b1 `shiftL` 8
     go (b2:b1:b0:bs) =
-        (BS.index alphabet $ fromIntegral $ w .&. 0x3f) :
-        (BS.index alphabet $ fromIntegral $ w `shiftR` 6 .&. 0x3f) :
-        (BS.index alphabet $ fromIntegral $ w `shiftR` 12 .&. 0x3f) :
-        (BS.index alphabet $ fromIntegral $ w `shiftR` 18 .&. 0x3f) :
+        BS.index alphabet (fromIntegral $ w .&. 0x3f) :
+        BS.index alphabet (fromIntegral $ w `shiftR` 6 .&. 0x3f) :
+        BS.index alphabet (fromIntegral $ w `shiftR` 12 .&. 0x3f) :
+        BS.index alphabet (fromIntegral $ w `shiftR` 18 .&. 0x3f) :
         go bs
       where
         w :: Word32
